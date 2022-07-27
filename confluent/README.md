@@ -1,17 +1,6 @@
-# Local Kafka PoC
+# Confluent Kafka PoC
 
-This is a quick and dirty PoC to be able to experiment and troubleshoot issues with Kafka 2.4.1.
-
-## Software Prerequisites
-* Minikube
-```
-brew install minikube
-```
-
-* Docker
-```
-brew install docker
-```
+This PoC uses plain K8s manifests using Confluent-based container images.
 
 ## Running the PoC
 1. Start Minikube
@@ -42,6 +31,3 @@ kubectl run -ti --image=bitnami/kafka:2.4.1 consume --restart=Never --rm -- kafk
 ```
 kubectl run -ti --image=bitnami/kafka:2.4.1 produce --restart=Never --rm -- kafka-console-producer.sh --topic test01 --broker-list kafka:9092
 ```
-
-## TODO
-* Set up TLS and ACLs
