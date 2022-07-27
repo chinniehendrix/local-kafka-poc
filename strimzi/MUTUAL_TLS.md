@@ -44,5 +44,8 @@ kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config c
 kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties
 ```
 
-
+> Run this command to view the Kafka broker logs
+```
+kubectl logs -f my-cluster-kafka-0 -c kafka -n kafka
+```
 
