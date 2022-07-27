@@ -13,7 +13,9 @@ spec:
           type: tls
       external:
         type: nodeport
-        tls: false
+        tls: true
+        authentication:
+          type: tls
     storage:
       type: jbod
       volumes:
