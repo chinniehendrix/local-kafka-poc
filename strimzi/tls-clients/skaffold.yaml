@@ -1,0 +1,18 @@
+apiVersion: skaffold/v2beta21
+kind: Config
+metadata:
+  name: local-kafka-poc
+build:
+  artifacts:
+  - image: go-kafka-client
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  statusCheckDeadlineSeconds: 300
+  kubectl:
+    manifests:
+    - ../deploy/namespace.yaml
+    - ../deploy/cluster-operator/*.yaml
+    flags:	# 	additional flags passed to kubectl.
+      global: ["-n", "kafka"]
+    # - ../deploy/kafka-cluster-tls.yaml
