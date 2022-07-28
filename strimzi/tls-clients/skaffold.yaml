@@ -13,6 +13,10 @@ deploy:
     manifests:
     - ../deploy/namespace.yaml
     - ../deploy/cluster-operator/*.yaml
+    - ../deploy/kafka-cluster-tls.yaml
+    - ../deploy/topic.yaml
+    - ../deploy/producer-user.yaml
+    - ../deploy/consumer-user.yaml
+
     flags:	# 	additional flags passed to kubectl.
       global: ["-n", "kafka"]
-    # - ../deploy/kafka-cluster-tls.yaml
