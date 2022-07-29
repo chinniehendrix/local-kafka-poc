@@ -1,2 +1,3 @@
 sandbox/
 *.jks
+local-kafka-poc
