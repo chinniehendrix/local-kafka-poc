@@ -1,3 +1,15 @@
-FROM alpine:3.12
+# Go image for building the project
+FROM golang:alpine as builder
 
-ENTRYPOINT [ "/bin/sleep", "3600" ]
+ENV GOBIN=$GOPATH/bin
+ENV GO111MODULE="on"
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY go.mod /app
+COPY main.go /app
+
+RUN go build .
+
+ENTRYPOINT ["/app/local-kafka-poc"]
