@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-go-client
+  labels:
+    app: kafka-go-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-go-client
+  template:
+    metadata:
+      labels:
+        app: kafka-go-client
+    spec:
+      containers:
+      - name: kafka-go-client
+        image: kafka-go-client:latest
+        ports:
+        - containerPort: 80

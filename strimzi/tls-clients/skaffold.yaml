@@ -4,7 +4,7 @@ metadata:
   name: local-kafka-poc
 build:
   artifacts:
-  - image: go-kafka-client
+  - image: kafka-go-client
     docker:
       dockerfile: Dockerfile
 deploy:
@@ -17,6 +17,7 @@ deploy:
     - ../deploy/topic.yaml
     - ../deploy/producer-user.yaml
     - ../deploy/consumer-user.yaml
+    - ../deploy/kafka-go-client.yaml
 
     flags:	# 	additional flags passed to kubectl.
       global: ["-n", "kafka"]
