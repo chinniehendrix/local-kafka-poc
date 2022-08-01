@@ -6,8 +6,9 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -50,37 +51,40 @@ func main() {
 	now := time.Now()
 	fmt.Println("Go client started")
 	fmt.Println(now)
+	logger := log.New()
 
-	dialer := &kafka.Dialer{
-		Timeout:   time.Second * 10,
-		DualStack: true,
-		TLS:       tlsConfig(),
+	w := &kafka.Writer{
+		Addr:        kafka.TCP("my-cluster-kafka-brokers:9093"),
+		Topic:       "my-topic",
+		Compression: kafka.Lz4,
+		Transport: &kafka.Transport{
+			TLS: tlsConfig(),
+		},
+		//Balancer: &kafka.Hash{},
+		Logger: logger,
 	}
 
-	// to produce messages
-	topic := "my-topic"
-	partition := 0
+	for i := 0; i < 1; i++ {
+		key := fmt.Sprintf("Key-%d", i)
 
-	conn, err := dialer.DialLeader(context.Background(), "tcp", "my-cluster-kafka-brokers:9093", topic, partition)
-	if err != nil {
-		log.Fatal("failed to dial leader:", err)
+		kafkaMessage := &kafka.Message{
+			Key:   []byte(key),
+			Value: []byte(fmt.Sprintf("This is message %d", i)),
+		}
+
+		err := w.WriteMessages(context.Background(), *kafkaMessage)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("produced", key)
+		}
+
 	}
 
-	conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	_, err = conn.WriteMessages(
-		kafka.Message{Value: []byte("one!")},
-		kafka.Message{Value: []byte("two!")},
-		kafka.Message{Value: []byte("three!")},
-	)
-
-	if err != nil {
-		log.Fatal("failed to write messages:", err)
-	} else {
-		fmt.Println("Produced 3 messages")
-	}
-
-	if err := conn.Close(); err != nil {
+	if err := w.Close(); err != nil {
 		log.Fatal("failed to close writer:", err)
+	} else {
+		log.Info("Successfully closed writer")
 	}
 
 	time.Sleep(3600 * time.Second)

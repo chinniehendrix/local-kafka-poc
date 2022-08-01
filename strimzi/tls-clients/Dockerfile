@@ -1,5 +1,5 @@
 # Go image for building the project
-FROM golang:alpine as builder
+FROM golang:1.18.5-alpine3.15
 
 ENV GOBIN=$GOPATH/bin
 ENV GO111MODULE="on"
@@ -10,6 +10,7 @@ WORKDIR /app
 COPY go.* /app
 COPY main.go /app
 
+RUN go version
 RUN go build .
 
 ENTRYPOINT ["/app/local-kafka-poc"]
