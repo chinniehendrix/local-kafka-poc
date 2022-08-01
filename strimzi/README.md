@@ -1,5 +1,7 @@
 # Local Kafka v2.4.1 using Strimzi
 
+> *Important*: If you need to spin up a mutual-TLS-enabled Kafka cluster, see [MUTUAL_TLS.md](MUTUAL_TLS.md).
+
 1. Start Minikube
 ```
 minikube start --memory=6Gb --kubernetes-version=1.21.14 --driver=hyperkit --profile=strimzi
