@@ -10,9 +10,9 @@ cd deploy
 ```
 kubectl apply -f kafka-cluster-tls.yaml
 ```
-## Create a topic
+## Create topics
 ```
-kubectl apply -f topic.yaml
+kubectl apply -f topics.yaml
 ```
 
 ## Create a producer user
