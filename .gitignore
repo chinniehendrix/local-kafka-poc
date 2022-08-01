@@ -1,3 +1,6 @@
 sandbox/
 *.jks
 local-kafka-poc
+*.crt
+*.key
+*.p12
