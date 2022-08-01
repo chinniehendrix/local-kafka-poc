@@ -6,7 +6,7 @@ kubectl get secret test-consumer-01 -o jsonpath='{.data.user\.crt}' -n kafka | b
 kubectl get secret test-consumer-01 -o jsonpath='{.data.user\.key}' -n kafka | base64 -d > consumer-user.key
 kubectl get secret my-cluster-cluster-ca-cert -o jsonpath='{.data.ca\.crt}' -n kafka | base64 -d > ca.crt
 
-echo "yes" | keytool -import -trustcacerts -file ca.crt -keystore truststore.jks -storepass 123456
-RANDFILE=/tmp/.rnd openssl pkcs12 -export -in user.crt -inkey user.key -name my-user -password pass:123456 -out consumer-user.p12
+echo "yes" | keytool -import -trustcacerts -file ca.crt -keystore consumer-truststore.jks -storepass 123456
+RANDFILE=/tmp/.rnd openssl pkcs12 -export -in consumer-user.crt -inkey consumer-user.key -name my-user -password pass:123456 -out consumer-user.p12
 
 rm consumer-user.crt consumer-user.key ca.crt
