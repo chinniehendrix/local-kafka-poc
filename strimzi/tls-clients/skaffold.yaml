@@ -14,7 +14,7 @@ deploy:
     - ../deploy/namespace.yaml
     - ../deploy/cluster-operator/*.yaml
     - ../deploy/kafka-cluster-tls.yaml
-    - ../deploy/topic.yaml
+    - ../deploy/topics.yaml
     - ../deploy/producer-user.yaml
     - ../deploy/consumer-user.yaml
     - ../deploy/kafka-go-client.yaml
