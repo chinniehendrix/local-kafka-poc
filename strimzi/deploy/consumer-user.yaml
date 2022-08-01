@@ -18,3 +18,9 @@ spec:
           patternType: literal
         operation: Read
         host: "*"
+      - resource:
+          type: group
+          name: my-group
+          patternType: literal
+        operation: Read
+        host: "*"
