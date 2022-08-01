@@ -17,5 +17,19 @@ spec:
       containers:
       - name: kafka-go-client
         image: kafka-go-client:latest
-        ports:
-        - containerPort: 80
+        volumeMounts:
+        - name: client-certs
+          mountPath: "/client-certs"
+          readOnly: true
+        - name: ca-certs
+          mountPath: "/ca-certs"
+          readOnly: true
+      volumes:
+      - name: client-certs
+        secret:
+          secretName: test-producer-01
+          optional: false
+      - name: ca-certs
+        secret:
+          secretName: my-cluster-cluster-ca-cert
+          optional: false
