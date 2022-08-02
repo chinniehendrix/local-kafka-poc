@@ -67,16 +67,23 @@ func main() {
 	}
 
 	conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	_, err = conn.WriteMessages(
-		kafka.Message{Value: []byte("one!")},
-		kafka.Message{Value: []byte("two!")},
-		kafka.Message{Value: []byte("three!")},
-	)
 
-	if err != nil {
-		log.Fatal("failed to write messages:", err)
-	} else {
-		fmt.Println("Produced 3 messages")
+	for i := 0; i < 1000; i++ {
+		key := fmt.Sprintf("Key-%d", i)
+
+		kafkaMessage := &kafka.Message{
+			Key:   []byte(key),
+			Value: []byte(fmt.Sprintf("This is message %d", i)),
+		}
+
+		_, err := conn.WriteMessages(*kafkaMessage)
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("produced", key)
+		}
+
 	}
 
 	if err := conn.Close(); err != nil {
