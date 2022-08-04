@@ -38,10 +38,10 @@ chmod a+x get_consumer_keys.sh
 > `brew install strimzi-kafka-cli`
 ```
 ./get_producer_keys.sh
-kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config client.properties
+kfk console-producer --topic my-topic -n kafka -c my-cluster --producer.config producer.properties
 
 ./get_consumer_keys.sh
-kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config client.properties
+kfk console-consumer --topic my-topic -n kafka -c my-cluster --consumer.config consumer.properties
 ```
 
 > Run this command to view the Kafka broker logs
