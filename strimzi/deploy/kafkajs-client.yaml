@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafkajs-client
+  labels:
+    app: kafkajs-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafkajs-client
+  template:
+    metadata:
+      labels:
+        app: kafkajs-client
+    spec:
+      containers:
+      - name: kafkajs-client
+        image: kafkajs-client:latest
+        env:
+        - name: MODE
+          value: "CONSUMER"
+        - name: LOG_LEVEL
+          value: "debug"
+        - name: KAFKA_BROKERS
+          value: "my-cluster-kafka-brokers:9093"
+        - name: KAFKA_CLIENT_CONNECTION_TIMEOUT
+          value: "300000"
+        - name: KAFKA_CLIENT_REQUEST_TIMEOUT
+          value: "30000"
+        - name: KAFKA_CLIENT_RETRIES
+          value: "5"
+        - name: KAFKA_CLIENT_LOG_LEVEL
+          value: "4"
+        - name: KAFKA_CONSUMER_SESSION_TIMEOUT
+          value: "300000"
+        - name: KAFKA_CONSUMER_HEARTBEAT_INTERVAL
+          value: "30000"
+        - name: KAFKA_CONSUMER_RETRIES
+          value: "5"
+        - name: KAFKA_CONSUMER_TOPIC
+          value: "my-topic"
+        - name: KAFKA_CONSUMER_GROUP_ID
+          value: "my-group"
+        - name: KAFKA_PRODUCER_TOPIC
+          value: "my-topic"
+        - name: KAFKA_CLIENT_CERT_PATH
+          value: "/client-certs/user.crt"
+        - name: KAFKA_CLIENT_KEY_PATH
+          value: "/client-certs/user.key"
+        volumeMounts:
+        - name: client-certs
+          mountPath: "/client-certs"
+          readOnly: true
+        - name: ca-certs
+          mountPath: "/ca-certs"
+          readOnly: true
+      volumes:
+      - name: client-certs
+        secret:
+          secretName: test-consumer-01
+          optional: false
+      - name: ca-certs
+        secret:
+          secretName: my-cluster-cluster-ca-cert
+          optional: false

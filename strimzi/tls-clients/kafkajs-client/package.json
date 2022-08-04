@@ -1,0 +1,59 @@
+{
+  "name": "kafkajs-client",
+  "version": "1.0.0",
+  "description": "KafkaJS Client",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "rimraf build && ttsc && tscpaths -p tsconfig.json -s ./src -o ./build && cp ./package.json build/.  && if [ -f \".env\" ] ; then cp ./.env build/. ; fi",
+    "start:build": "node build/index.js",
+    "start": "if [ -d \"build\" ] ; then node -r dotenv/config build/index.js ; else node -r dotenv/config index.js dotenv_config_path=/etc/secrets/.env; fi",
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register -r dotenv/config src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "async": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "fs": "0.0.1-security",
+    "kafkajs": "2.1.0",
+    "kafkajs-lz4": "^2.0.0-beta.0",
+    "lodash": "^4.17.20",
+    "module-alias": "^2.2.2",
+    "node-emoji": "^1.10.0",
+    "uuid": "^8.3.0",
+    "uuidv4": "^6.0.7",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@types/async": "^3.2.3",
+    "@types/hapi__joi": "^17.1.8",
+    "@types/lodash": "^4.14.165",
+    "@types/moment-timezone": "^0.5.30",
+    "@types/node": "^14.14.8",
+    "@types/node-emoji": "^1.8.1",
+    "@types/uuid": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "nodemon": "^2.0.6",
+    "prettier": "^1.19.1",
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.9.0",
+    "tscpaths": "^0.0.9",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.1.6"
+  },
+  "_moduleAliases": {
+    "@src": "build",
+    "@utils": "build/utils"
+  }
+}
