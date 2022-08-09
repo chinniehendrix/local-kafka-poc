@@ -1,0 +1,26 @@
+apiVersion: kafka.strimzi.io/v1alpha1
+kind: KafkaUser
+metadata:
+  name: kafka-connect
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      # access to offset.storage.topic
+      - resource:
+          type: topic
+          name: connect-cluster
+          patternType: prefix
+        operation: All
+        host: "*"
+      - resource:
+          type: group
+          name: connect-cluster
+          patternType: literal
+        operation: Read
+        host: "*"
