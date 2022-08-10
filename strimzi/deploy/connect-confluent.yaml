@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-connect
+  namespace: kafka
+spec:
+  selector:
+    matchLabels:
+      app: kafka-connect
+  serviceName: 'kafka-connect'
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: kafka-connect
+    spec:
+      terminationGracePeriodSeconds: 10
+      initContainers:
+      - name: generate-certs
+        image: openjdk:8-jdk-alpine
+        command: ['/bin/sh', '-c', 'echo $KEY_PASSWORD; echo "yes" | keytool -import -trustcacerts -file /ca-certs/ca.crt -keystore /certs/truststore.jks -storepass 123456; keytool -importkeystore -srckeystore /kafka-connect-certs/user.p12 -srcstoretype pkcs12 -destkeystore /certs/keystore.jks -srcstorepass $KEY_PASSWORD -storepass $KEY_PASSWORD;']
+        env:
+          - name: KEY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: kafka-connect
+                key: user.password
+                optional: false
+        volumeMounts:
+          - name: ca-certs
+            mountPath: "/ca-certs"
+          - name: certs
+            mountPath: "/certs"
+          - name: kafka-connect-certs
+            mountPath: "/kafka-connect-certs"
+      containers:
+        - name: kafka-connect
+          image: docker.io/chindou/my-kafka-connector:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CONNECT_BOOTSTRAP_SERVERS
+              value: 'my-cluster-kafka-bootstrap:9093'
+            - name: CONNECT_REST_ADVERTISED_HOST_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+            - name: CONNECT_REST_PORT
+              value: '8083'
+            - name: CONNECT_GROUP_ID
+              value: 'kafka-connect'
+            - name: CONNECT_CONFIG_STORAGE_TOPIC
+              value: 'kafka-connect-config'
+            - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_OFFSET_FLUSH_INTERVAL_MS
+              value: '10000'
+            - name: CONNECT_OFFSET_STORAGE_TOPIC
+              value: 'kafka-connect-offsets'
+            - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_STATUS_STORAGE_TOPIC
+              value: 'kafka-connect-status'
+            - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_KEY_CONVERTER
+              value: 'org.apache.kafka.connect.storage.StringConverter'
+            - name: CONNECT_VALUE_CONVERTER
+              value: 'io.confluent.connect.avro.AvroConverter'
+            - name: CONNECT_INTERNAL_KEY_CONVERTER
+              value: 'org.apache.kafka.connect.json.JsonConverter'
+            - name: CONNECT_INTERNAL_VALUE_CONVERTER
+              value: 'org.apache.kafka.connect.json.JsonConverter'
+            - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+              value: 'http://sregistry:8081'
+            - name: CONNECT_PLUGIN_PATH
+              value: '/usr/share/java,/usr/share/confluent-hub-components'
+            - name: CONNECT_LOG4J_LOGGERS
+              value: 'org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR'
+            - name: JVM_OPTS
+              value: -Xms256m -Xmx256m
+            - name: CONNECT_SECURITY_PROTOCOL
+              value: 'SSL'
+            - name: CONNECT_SSL_TRUSTSTORE_LOCATION
+              value: '/certs/truststore.jks'
+            - name: CONNECT_SSL_TRUSTSTORE_TYPE
+              value: 'JKS'
+            - name: CONNECT_SSL_TRUSTSTORE_PASSWORD
+              value: '123456'
+            - name: CONNECT_SSL_KEYSTORE_LOCATION
+              value: '/certs/keystore.jks'
+            - name: CONNECT_SSL_KEYSTORE_TYPE
+              value: 'JKS'
+            - name: CONNECT_SSL_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-connect
+                  key: user.password
+                  optional: false
+          ports:
+            - containerPort: 8083
+          resources:
+            requests:
+              memory: 1024Mi
+              cpu: 500m
+            limits:
+              memory: 2048Mi
+              cpu: 1000m
+          volumeMounts:
+            - name: connect
+              mountPath: /kafka/connect
+            - name: producer-certs
+              mountPath: "/producer-certs"
+            - name: consumer-certs
+              mountPath: "/consumer-certs"
+            - name: ca-certs
+              mountPath: "/ca-certs"
+            - name: kafka-connect-certs
+              mountPath: "/kafka-connect-certs"
+            - name: certs
+              mountPath: "/certs"
+      volumes:
+      - name: producer-certs
+        secret:
+          secretName: test-producer-01
+          optional: false
+      - name: consumer-certs
+        secret:
+          secretName: test-consumer-01
+          optional: false
+      - name: kafka-connect-certs
+        secret:
+          secretName: kafka-connect
+          optional: false
+      - name: ca-certs
+        secret:
+          secretName: my-cluster-cluster-ca-cert
+          optional: false
+      - name: certs
+        emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: connect
+      spec:
+        accessModes: ['ReadWriteOnce']
+        resources:
+          requests:
+            storage: 200Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-connect
+  namespace: kafka
+  labels:
+    app: kafka-connect
+spec:
+  ports:
+    - port: 8083
+  clusterIP: None
+  selector:
+    app: kafka-connect
