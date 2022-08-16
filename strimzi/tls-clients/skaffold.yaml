@@ -15,7 +15,7 @@ deploy:
     - ../deploy/cluster-operator/*.yaml
     - ../deploy/kafka-cluster-tls.yaml
     - ../deploy/kafka-connect-user.yaml
-    - ../deploy/connect.yaml
+    - ../deploy/connect-confluent.yaml
     - ../deploy/topics.yaml
     - ../deploy/producer-user.yaml
     - ../deploy/consumer-user.yaml
