@@ -14,13 +14,13 @@ spec:
       # access to offset.storage.topic
       - resource:
           type: topic
-          name: connect-cluster
+          name: kafka-connect
           patternType: prefix
         operation: All
         host: "*"
       - resource:
           type: group
-          name: connect-cluster
+          name: kafka-connect
           patternType: literal
         operation: Read
         host: "*"
