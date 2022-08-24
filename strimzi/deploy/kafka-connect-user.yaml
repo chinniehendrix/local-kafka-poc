@@ -11,7 +11,6 @@ spec:
   authorization:
     type: simple
     acls:
-      # access to offset.storage.topic
       - resource:
           type: topic
           name: kafka-connect
@@ -19,8 +18,38 @@ spec:
         operation: All
         host: "*"
       - resource:
+          type: topic
+          name: my-topic
+          patternType: literal
+        operation: Read
+        host: "*"
+      - resource:
+          type: topic
+          name: my-topic.replica
+          patternType: literal
+        operation: All
+        host: "*"
+      - resource:
+          type: topic
+          name: _confluent
+          patternType: prefix
+        operation: All
+        host: "*"
+      - resource:
+          type: topic
+          name: __consumer_timestamps
+          patternType: literal
+        operation: All
+        host: "*"
+      - resource:
           type: group
           name: kafka-connect
+          patternType: literal
+        operation: Read
+        host: "*"
+      - resource:
+          type: group
+          name: confluent-replicator
           patternType: literal
         operation: Read
         host: "*"

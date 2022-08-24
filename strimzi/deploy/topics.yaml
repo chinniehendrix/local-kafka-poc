@@ -19,3 +19,38 @@ metadata:
 spec:
   partitions: 3
   replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: confluent-command
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: "my-cluster"
+spec:
+  topicName: _confluent-command
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: consumer-timestamps
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: "my-cluster"
+spec:
+  topicName: __consumer_timestamps
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: my-topic.replica
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: "my-cluster"
+spec:
+  partitions: 3
+  replicas: 1

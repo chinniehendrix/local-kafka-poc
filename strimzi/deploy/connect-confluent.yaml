@@ -37,7 +37,7 @@ spec:
             mountPath: "/kafka-connect-certs"
       containers:
         - name: kafka-connect
-          image: docker.io/chindou/my-kafka-connector:latest
+          image: docker.io/chindou/my-kafka-connector:confluent-replicator-3
           imagePullPolicy: IfNotPresent
           env:
             - name: CONNECT_BOOTSTRAP_SERVERS
@@ -76,12 +76,14 @@ spec:
             - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
               value: 'http://sregistry:8081'
             - name: CONNECT_PLUGIN_PATH
-              value: '/usr/share/java,/usr/share/confluent-hub-components'
+              value: '/usr/share/java,/opt/app/jars,/usr/share/confluent-hub-components'
             - name: CONNECT_LOG4J_LOGGERS
               value: 'org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR'
             - name: JVM_OPTS
               value: -Xms256m -Xmx256m
             - name: CONNECT_SECURITY_PROTOCOL
+              value: 'SSL'
+            - name: SECURITY_PROTOCOL
               value: 'SSL'
             - name: CONNECT_SSL_TRUSTSTORE_LOCATION
               value: '/certs/truststore.jks'
@@ -93,7 +95,53 @@ spec:
               value: '/certs/keystore.jks'
             - name: CONNECT_SSL_KEYSTORE_TYPE
               value: 'JKS'
+            - name: CONNECT_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR
+              value: '1'
+            - name: CONNECT_CONFLUENT_METRICS_REPORTER_REPLICAS
+              value: '1'
             - name: CONNECT_SSL_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-connect
+                  key: user.password
+                  optional: false
+            - name: CONNECT_PRODUCER_SECURITY_PROTOCOL
+              value: 'SSL'
+            - name: CONNECT_PRODUCER_SSL_TRUSTSTORE_LOCATION
+              value: '/certs/truststore.jks'
+            - name: CONNECT_PRODUCER_SSL_TRUSTSTORE_PASSWORD
+              value: '123456'
+            - name: CONNECT_PRODUCER_SSL_KEYSTORE_LOCATION
+              value: '/certs/keystore.jks'
+            - name: CONNECT_PRODUCER_SSL_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-connect
+                  key: user.password
+                  optional: false
+            - name: CONNECT_PRODUCER_SSL_KEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-connect
+                  key: user.password
+                  optional: false
+            - name: CONNECT_CONSUMER_SECURITY_PROTOCOL
+              value: 'SSL'
+            - name: CONNECT_CONSUMER_SECURITY_PROTOCOL
+              value: 'SSL'
+            - name: CONNECT_CONSUMER_SSL_TRUSTSTORE_LOCATION
+              value: '/certs/truststore.jks'
+            - name: CONNECT_CONSUMER_SSL_TRUSTSTORE_PASSWORD
+              value: '123456'
+            - name: CONNECT_CONSUMER_SSL_KEYSTORE_LOCATION
+              value: '/certs/keystore.jks'
+            - name: CONNECT_CONSUMER_SSL_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-connect
+                  key: user.password
+                  optional: false
+            - name: CONNECT_CONSUMER_SSL_KEY_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: kafka-connect
@@ -101,13 +149,6 @@ spec:
                   optional: false
           ports:
             - containerPort: 8083
-          resources:
-            requests:
-              memory: 1024Mi
-              cpu: 500m
-            limits:
-              memory: 2048Mi
-              cpu: 1000m
           volumeMounts:
             - name: connect
               mountPath: /kafka/connect
